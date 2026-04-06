@@ -20,8 +20,8 @@ class AlertService:
             data: Input prediction data
             result: Prediction result with probability and level
         """
-        # Log to MongoDB
-        if alerts_collection:
+        # ✅ SAFE CHECK: Explicit None check for PyMongo compatibility
+        if alerts_collection is not None:
             doc = {
                 "lat": data.get("lat"),
                 "lng": data.get("lng"),
@@ -38,6 +38,8 @@ class AlertService:
                 print(f"📝 Alert logged to MongoDB: {result['level']} risk")
             except Exception as e:
                 print(f"⚠️  Failed to log to MongoDB: {e}")
+        else:
+            print("⚠️  Skipping DB log (alerts_collection is None)")
         
         # Send Telegram alert if Red level
         if result["level"] == "Red" and TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
